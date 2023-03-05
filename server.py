@@ -84,14 +84,14 @@ def favicon():
 
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
-    '''update the entities via this interface'''
+    '''Update world entities'''
     response_status = 400
     request_post_json = {}
     # Parse incoming request JSON
     try:
         request_post_json = flask_post_json()
     except Exception as e:
-        print(f'ERR Failed to parse JSON for request [{request}]')
+        print(f'ERR Failed to parse JSON for request [{request}]. e [{e}]')
         abort(response_status)
     
     # Update world with request JSON
