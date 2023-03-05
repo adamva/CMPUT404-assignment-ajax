@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ ! -r '.env' ]; then echo "ERR Could not find .env"; exit 1; fi
-source .env
+source script.env
 hdr_out=`mktemp`
 
 rsp=`curl -D $hdr_out -s "${APP_URL}/world"`

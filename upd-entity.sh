@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ ! -r '.env' ]; then echo "ERR Could not find .env"; exit 1; fi
-source .env
+source script.env
 
 if [ "#$1" = "#" ]; then echo "Usage $0 <entity>"; exit 1; fi
 entity="$1"
