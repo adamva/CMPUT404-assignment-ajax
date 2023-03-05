@@ -23,7 +23,7 @@
 
 
 import flask
-from flask import Flask, request, send_from_directory, redirect, url_for
+from flask import abort, Flask, redirect, request, Response, send_from_directory, url_for
 import json
 app = Flask(__name__)
 app.debug = True
@@ -85,12 +85,33 @@ def favicon():
 @app.route("/entity/<entity>", methods=['POST','PUT'])
 def update(entity):
     '''update the entities via this interface'''
-    return None
+    response_status = 400
+    request_post_json = {}
+    # Parse incoming request JSON
+    try:
+        request_post_json = flask_post_json()
+    except Exception as e:
+        print(f'ERR Failed to parse JSON for request [{request}]')
+        abort(response_status)
+    
+    # Update world with request JSON
+    if request.method == 'PUT':
+        print(f'Adding entity [{entity}] with data [{request_post_json}]')
+        myWorld.set(entity, request_post_json)
+        response_status = 201
+    elif request.method == 'POST':
+        for key in request_post_json:
+            myWorld.update(entity, key, request_post_json[key])
+        response_status = 200
+    else:
+        response_status=405
+    return Response(status=response_status)
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''Return the current world'''
     # TODO Should I JSON-ify this?
+    # TODO Should I set Headers?
     return myWorld.world()
 
 @app.route("/entity/<entity>")    
