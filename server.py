@@ -137,8 +137,11 @@ def world():
 
 @app.route("/entity/<entity>")    
 def get_entity(entity):
-    '''This is the GET version of the entity interface, return a representation of the entity'''
-    return None
+    '''Return the entity from the world'''
+    entity_data = myWorld.get(entity)
+    if entity_data == {}:
+        app.logger.warning(f'Unknown entity [{entity}], returning empty JSON')
+    return entity_data
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
