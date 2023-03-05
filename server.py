@@ -27,7 +27,7 @@ from flask import abort, Flask, has_request_context, redirect, request, Response
 import json
 from flask.logging import default_handler
 
-# This logging code is modified from a flask documenation by Pallets to flask.palletsprojects.com
+# This logging code is modified from a flask documenation by Pallets, retrieved on 2023-03-05 from flask.palletsprojects.com
 # Documentation here:
 # https://flask.palletsprojects.com/en/2.2.x/logging/
 class RequestFormatter(logging.Formatter):
