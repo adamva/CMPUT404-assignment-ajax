@@ -156,8 +156,10 @@ def get_entity(entity):
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
-    '''Clear the world out!'''
-    return None
+    '''Clear the world'''
+    myWorld.clear()
+    # # TODO Should I set Headers?
+    return myWorld.world()
 
 if __name__ == "__main__":
     app.run()
