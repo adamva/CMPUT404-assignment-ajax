@@ -25,6 +25,7 @@ then
     exit $e
 else
     cat $hdr_out
+    echo "$rsp"
 fi
 
 rm $hdr_out
