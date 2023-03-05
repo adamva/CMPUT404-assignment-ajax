@@ -22,9 +22,30 @@
 #     pip install flask
 
 
-import flask
-from flask import abort, Flask, redirect, request, Response, send_from_directory, url_for
+import flask, logging
+from flask import abort, Flask, has_request_context, redirect, request, Response, send_from_directory, url_for
 import json
+from flask.logging import default_handler
+
+# This logging code is modified from a flask documenation by Pallets to flask.palletsprojects.com
+# Documentation here:
+# https://flask.palletsprojects.com/en/2.2.x/logging/
+class RequestFormatter(logging.Formatter):
+    def format(self, record):
+        if has_request_context():
+            record.url = request.url
+            record.remote_addr = request.remote_addr
+        else:
+            record.url = None
+            record.remote_addr = None
+
+        return super().format(record)
+
+formatter = RequestFormatter(
+    '%(asctime)s %(levelname)s %(url)s - %(funcName)s - %(message)s', "%Y-%m-%dT%H:%M:%S"
+)
+default_handler.setFormatter(formatter)
+
 app = Flask(__name__)
 app.debug = True
 
@@ -91,7 +112,7 @@ def update(entity):
     try:
         request_post_json = flask_post_json()
     except Exception as e:
-        print(f'ERR Failed to parse JSON for request [{request}]. e [{e}]')
+        app.logger.error(f'Failed to parse request JSON - [{e}]')
         abort(response_status)
     
     # Update world with request JSON
@@ -103,7 +124,7 @@ def update(entity):
             myWorld.update(entity, key, request_post_json[key])
         response_status = 200
     else:
-        print(f'ERR Unknown method [{request.method}]')
+        app.logger.error(f'Unknown method [{request.method}]')
         response_status=405
     return Response(status=response_status)
 
