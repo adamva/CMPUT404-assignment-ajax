@@ -96,7 +96,6 @@ def update(entity):
     
     # Update world with request JSON
     if request.method == 'PUT':
-        print(f'Adding entity [{entity}] with data [{request_post_json}]')
         myWorld.set(entity, request_post_json)
         response_status = 201
     elif request.method == 'POST':
@@ -104,6 +103,7 @@ def update(entity):
             myWorld.update(entity, key, request_post_json[key])
         response_status = 200
     else:
+        print(f'ERR Unknown method [{request.method}]')
         response_status=405
     return Response(status=response_status)
 
