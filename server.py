@@ -79,7 +79,7 @@ def hello():
 
 @app.route("/favicon.ico")
 def favicon():
-    '''Return static/favicon'''
+    '''Return static/favicon.ico'''
     return send_from_directory('static', 'favicon.ico')
 
 @app.route("/entity/<entity>", methods=['POST','PUT'])
@@ -89,8 +89,9 @@ def update(entity):
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
-    '''you should probably return the world here'''
-    return None
+    '''Return the current world'''
+    # TODO Should I JSON-ify this?
+    return myWorld.world()
 
 @app.route("/entity/<entity>")    
 def get_entity(entity):
