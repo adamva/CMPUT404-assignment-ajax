@@ -107,31 +107,41 @@ def favicon():
 def update(entity):
     '''Update world entities'''
     response_status = 400
+    response_error = {'error': {'code': 1, 'message': 'Could not perform update'}}
     request_post_json = {}
     # Parse incoming request JSON
     try:
         request_post_json = flask_post_json()
     except Exception as e:
         app.logger.error(f'Failed to parse request JSON - [{e}]')
-        abort(response_status)
+        response_error['error']['code'] = response_status
+        response_error['error']['message'] = str(e)
+        return Response(response=json.dumps(response_error), status=response_status, mimetype='application/json')
     
     # Update world with request JSON
+    did_update = False
     if request.method == 'PUT':
         myWorld.set(entity, request_post_json)
         response_status = 201
+        did_update = True
     elif request.method == 'POST':
         for key in request_post_json:
             myWorld.update(entity, key, request_post_json[key])
         response_status = 200
+        did_update = True
     else:
         app.logger.error(f'Unknown method [{request.method}]')
         response_status=405
-    return Response(status=response_status)
+
+    if did_update:
+        new_entity = myWorld.get(entity)
+        return Response(response=json.dumps(new_entity), status=response_status, mimetype='application/json')
+    else:
+        return Response(status=response_status)
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''Return the current world'''
-    # TODO Should I JSON-ify this?
     # TODO Should I set Headers?
     return myWorld.world()
 
@@ -141,6 +151,7 @@ def get_entity(entity):
     entity_data = myWorld.get(entity)
     if entity_data == {}:
         app.logger.warning(f'Unknown entity [{entity}], returning empty JSON')
+    # TODO Should I set Headers?
     return entity_data
 
 @app.route("/clear", methods=['POST','GET'])
