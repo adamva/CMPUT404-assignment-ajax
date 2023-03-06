@@ -33,24 +33,34 @@ var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 
 
-function sendJSONXMLHTTPRequest(url, objects, callback) {
+function sendJSONXMLHTTPRequest(method,url, objects, callback) {
     var xhr = new XMLHttpRequest();
+    // TODO Determine method GET/PUT/POST
+    xhr.open("GET", url);
+    // Setup XHR request
+    xhr.responseType = 'json';
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.send();
+    // Process response
     xhr.onreadystatechange = function () {
         if (xhr.readyState==4) {
             try {
                 if (xhr.status==200) {
-                    //XXX: parse some JSON from the request!
-                    //XXX: Pass the data to the callback!
+                    let responseData = xhr.response;
+                    callback(responseData);
                 }
             } 
             catch(e) {
-                alert('Error: ' + e.name);
+                alert('XHR Error: ' + e);
             }
         }
     };
     //XXX: POST to a URL
     //XXX: set the mimetype and the accept headers!
     // Remember to use application/json !
+    xhr.onerror = function() {
+        console.log(`Request failed for ${url}`)
+    };
 }
 
 
@@ -263,11 +273,16 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
-    drawFrame();
+    sendJSONXMLHTTPRequest('http://localhost:5000/world', {}, data => {
+        new_world = { ...world, ...data};
+        world = new_world;
+        drawFrame();
+    });
 }
 
 // 30 frames per second
-setInterval( update, 1000/30.0);
+// setInterval( update, 1000/30.0);
+setInterval( update, 1000/0.25);
 
 
 
