@@ -34,8 +34,7 @@ var H = canvas.height = window.innerHeight-50;
 
 let uuid = self.crypto.randomUUID();
 let appUrl = 'http://localhost:5000';
-// let fps = 30;
-let fps = 0.25;
+let fps = 30; // let fps = 0.25;
 
 function sendJSONXMLHTTPRequest(method, path, objects, callback) {
     url = `${appUrl}/${path}`;

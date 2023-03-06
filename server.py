@@ -22,7 +22,7 @@
 #     pip install flask
 
 
-import flask, logging
+import datetime, flask, logging
 from flask import abort, Flask, has_request_context, redirect, request, Response, send_from_directory, url_for
 import json
 from flask.logging import default_handler
@@ -58,11 +58,13 @@ app.debug = True
 class World:
     def __init__(self):
         self.clear()
+        self.last_modified = datetime.datetime.utcnow()
         
     def update(self, entity, key, value):
         entry = self.space.get(entity,dict())
         entry[key] = value
         self.space[entity] = entry
+        self.last_modified = datetime.datetime.utcnow()
 
     def set(self, entity, data):
         self.space[entity] = data
@@ -73,6 +75,9 @@ class World:
     def get(self, entity):
         return self.space.get(entity,dict())
     
+    def get_last_modified(self):
+        return self.last_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
     def world(self):
         return self.space
 
@@ -143,7 +148,9 @@ def update(entity):
 def world():
     '''Return the current world'''
     # TODO Should I set Headers?
-    return myWorld.world()
+    rsp = Response(response=json.dumps(myWorld.world()), status=200, mimetype='application/json')
+    rsp.headers['Last-Modified'] = myWorld.get_last_modified()
+    return rsp
 
 @app.route("/entity/<entity>")    
 def get_entity(entity):
