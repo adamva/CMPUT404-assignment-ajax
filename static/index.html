@@ -33,14 +33,22 @@ var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 
 
-function sendJSONXMLHTTPRequest(method,url, objects, callback) {
+function sendJSONXMLHTTPRequest(method, url, objects, callback) {
     var xhr = new XMLHttpRequest();
-    // TODO Determine method GET/PUT/POST
-    xhr.open("GET", url);
-    // Setup XHR request
+    // Process request
+    if (method === 'GET') {
+        xhr.open('GET', url);
+    } else if (method === 'POST' || method === 'PUT') {
+        xhr.open(method, url);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8')
+    }
     xhr.responseType = 'json';
     xhr.setRequestHeader('Accept', 'application/json');
-    xhr.send();
+
+    // Send request
+    console.log(`Sending ${method} request to ${url}`);
+    objects ? xhr.send(JSON.stringify(objects)) : xhr.send();
+    
     // Process response
     xhr.onreadystatechange = function () {
         if (xhr.readyState==4) {
@@ -55,9 +63,8 @@ function sendJSONXMLHTTPRequest(method,url, objects, callback) {
             }
         }
     };
-    //XXX: POST to a URL
-    //XXX: set the mimetype and the accept headers!
-    // Remember to use application/json !
+    
+    // Handle errors
     xhr.onerror = function() {
         console.log(`Request failed for ${url}`)
     };
@@ -149,7 +156,10 @@ function addEntity(entity, data) {
     world[entity] = data;
     drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
-
+    sendJSONXMLHTTPRequest('POST', `http://localhost:5000/entity/${entity}`, data, rsp_data => {
+        console.log(`Sending new entity ${entity}`);
+        // drawFrame(); // TODO Do I need this?
+    });
 }
 
 var counter = 0;
@@ -272,8 +282,7 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 
 
 function update() {
-    //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
-    sendJSONXMLHTTPRequest('http://localhost:5000/world', {}, data => {
+    sendJSONXMLHTTPRequest('GET', 'http://localhost:5000/world', null, data => {
         new_world = { ...world, ...data};
         world = new_world;
         drawFrame();
