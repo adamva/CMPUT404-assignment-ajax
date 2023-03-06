@@ -32,8 +32,13 @@ var context = canvas.getContext("2d");
 var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 
+let uuid = self.crypto.randomUUID();
+let appUrl = 'http://localhost:5000';
+// let fps = 30;
+let fps = 0.25;
 
-function sendJSONXMLHTTPRequest(method, url, objects, callback) {
+function sendJSONXMLHTTPRequest(method, path, objects, callback) {
+    url = `${appUrl}/${path}`;
     var xhr = new XMLHttpRequest();
     // Process request
     if (method === 'GET') {
@@ -154,18 +159,17 @@ function getPosition(e) {
 
 function addEntity(entity, data) {
     world[entity] = data;
-    drawNextFrame(); // (but should we?)
-    //XXX: Send a XHTML Request that updates the entity you just  modified!
-    sendJSONXMLHTTPRequest('POST', `http://localhost:5000/entity/${entity}`, data, rsp_data => {
+    // drawNextFrame(); // (but should we?)
+    sendJSONXMLHTTPRequest('POST', `entity/${entity}`, data, rsp_data => {
         console.log(`Sending new entity ${entity}`);
-        // drawFrame(); // TODO Do I need this?
     });
+    // drawFrame();
 }
 
 var counter = 0;
 function addEntityWithoutName(data) {
     //var name = "X"+Math.floor((Math.random()*100)+1);
-    var name = "X"+(counter++)%100;
+    var name = uuid+'-'+(counter++)%100;
     addEntity(name,data);
 }
 
@@ -282,16 +286,18 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 
 
 function update() {
-    sendJSONXMLHTTPRequest('GET', 'http://localhost:5000/world', null, data => {
+    console.log(uuid);
+    sendJSONXMLHTTPRequest('GET', 'world', null, data => {
         new_world = { ...world, ...data};
         world = new_world;
+        console.log('Current world: ' + JSON.stringify(world));
+        drawNextFrame();
         drawFrame();
     });
 }
 
 // 30 frames per second
-// setInterval( update, 1000/30.0);
-setInterval( update, 1000/0.25);
+setInterval( update, 1000/fps);
 
 
 
