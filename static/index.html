@@ -24,6 +24,15 @@
     <script src="json2.js"></script>
   </head> 
   <body bgcolor="black" height="100%" width="100%"> 
+    <div style="border: 1pt solid white; color: white">
+        <h3 id="drawerId">Hello!</h3>
+        <label for="brushColor">Brush Color: </label>
+        <select id="brushColor">
+            <option value="red">Red</option>
+            <option value="green">Green</option>
+            <option value="blue">Blue</option>
+        </select>
+    </div>
     <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas> 
     <script>
 var canvas = document.getElementById('c');
@@ -32,9 +41,24 @@ var context = canvas.getContext("2d");
 var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 
-let uuid = self.crypto.randomUUID();
-let appUrl = 'http://localhost:5000';
-let fps = 30; // let fps = 0.25;
+var uuid = self.crypto.randomUUID();
+document.querySelector('#drawerId').textContent = `ID: ${uuid}`;
+var appUrl = 'http://localhost:5000';
+var fps = 30; fps = 0.25;
+
+/*
+This code is modified from an answer to a question forum by Paolo Bergantino, on 2009-07-06, retrieved 2023-03-05 from stackoverflow.com
+Question Forum
+https://stackoverflow.com/questions/1085801/get-selected-value-in-dropdown-list-using-javascript
+*/
+var brushColor = 'red';
+var brushColorSelectElement = document.getElementById("brushColor");
+function onChangeBrushColor() {
+    brushColor = brushColorSelectElement.value;
+    console.log(`You changed the brushColor to ${brushColor}`);
+}
+brushColorSelectElement.onchange = onChangeBrushColor;
+onChangeBrushColor();
 
 function sendJSONXMLHTTPRequest(method, path, objects, callback) {
     url = `${appUrl}/${path}`;
@@ -50,7 +74,7 @@ function sendJSONXMLHTTPRequest(method, path, objects, callback) {
     xhr.setRequestHeader('Accept', 'application/json');
 
     // Send request
-    console.log(`Sending ${method} request to ${url}`);
+    // console.log(`Sending ${method} request to ${url}`);
     objects ? xhr.send(JSON.stringify(objects)) : xhr.send();
     
     // Process response
@@ -271,25 +295,22 @@ mouse = (function() {
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    addEntityWithoutName({'x':x,'y':y,'colour':brushColor});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':brushColor});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
-                          'radius':10});
+    addEntityWithoutName({'x':x,'y':y,'colour':brushColor,'radius':10});
 });
 
 
 function update() {
-    console.log(uuid);
     sendJSONXMLHTTPRequest('GET', 'world', null, data => {
         new_world = { ...world, ...data};
         world = new_world;
-        console.log('Current world: ' + JSON.stringify(world));
         drawNextFrame();
         drawFrame();
     });
