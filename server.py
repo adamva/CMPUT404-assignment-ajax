@@ -127,7 +127,7 @@ def update(entity):
     did_update = False
     if request.method == 'PUT':
         myWorld.set(entity, request_post_json)
-        response_status = 201
+        response_status = 200
         did_update = True
     elif request.method == 'POST':
         for key in request_post_json:
