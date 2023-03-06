@@ -46,7 +46,7 @@ var H = canvas.height = window.innerHeight-50;
 var uuid = self.crypto.randomUUID();
 document.querySelector('#drawerId').textContent = `ID: ${uuid}`;
 var appUrl = 'http://localhost:5000';
-var fps = 30; fps = 0.25;
+var fps = 30; // fps = 0.25;
 
 var brushColor = 'red';
 var brushRadius = 2;
@@ -204,7 +204,7 @@ function addEntity(entity, data) {
 var counter = 0;
 function addEntityWithoutName(data) {
     //var name = "X"+Math.floor((Math.random()*100)+1);
-    var name = uuid+'-'+(counter++)%100;
+    var name = uuid+'-'+(counter++)%1000;
     addEntity(name,data);
 }
 
