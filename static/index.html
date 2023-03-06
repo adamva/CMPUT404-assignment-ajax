@@ -32,6 +32,8 @@
             <option value="green">Green</option>
             <option value="blue">Blue</option>
         </select>
+        <label for="brushRadius">Brush Radius: </label>
+        <input type="range" min="2" max="10" value="5" id="brushRadius">
     </div>
     <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas> 
     <script>
@@ -46,12 +48,13 @@ document.querySelector('#drawerId').textContent = `ID: ${uuid}`;
 var appUrl = 'http://localhost:5000';
 var fps = 30; fps = 0.25;
 
+var brushColor = 'red';
+var brushRadius = 2;
 /*
 This code is modified from an answer to a question forum by Paolo Bergantino, on 2009-07-06, retrieved 2023-03-05 from stackoverflow.com
 Question Forum
 https://stackoverflow.com/questions/1085801/get-selected-value-in-dropdown-list-using-javascript
 */
-var brushColor = 'red';
 var brushColorSelectElement = document.getElementById("brushColor");
 function onChangeBrushColor() {
     brushColor = brushColorSelectElement.value;
@@ -59,6 +62,14 @@ function onChangeBrushColor() {
 }
 brushColorSelectElement.onchange = onChangeBrushColor;
 onChangeBrushColor();
+
+var brushRadiusSelectElement = document.getElementById("brushRadius");
+function onChangeBrushRadius() {
+    brushRadius = brushRadiusSelectElement.value;
+    console.log(`You changed the brushRadius to ${brushRadius}`);
+}
+brushRadiusSelectElement.onchange = onChangeBrushRadius;
+onChangeBrushRadius();
 
 function sendJSONXMLHTTPRequest(method, path, objects, callback) {
     url = `${appUrl}/${path}`;
@@ -111,7 +122,8 @@ function drawCircle(context,entity) {
         //moveTo(x,y);
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
-        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
+        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);
+        fill();  
         stroke();                                
     }
 }
@@ -295,15 +307,15 @@ mouse = (function() {
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':brushColor});
+    addEntityWithoutName({'x':x,'y':y,'colour':brushColor,'radius':brushRadius});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':brushColor});
+    addEntityWithoutName({'x':x,'y':y,'colour':brushColor,'radius':brushRadius});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':brushColor,'radius':10});
+    addEntityWithoutName({'x':x,'y':y,'colour':brushColor,'radius':brushRadius});
 });
 
 
