@@ -82,7 +82,7 @@ var H = canvas.height = window.innerHeight-200;
 var uuid = self.crypto.randomUUID();
 document.querySelector('#drawerId').textContent = `Drawer ID: ${uuid}`;
 var appUrl = 'http://localhost:5000';
-var fps = 30; // fps = 0.25;
+var fps = 30; //fps = 0.25;
 
 var brushColor = 'red';
 var brushRadius = 2;
@@ -232,7 +232,7 @@ function addEntity(entity, data) {
     world[entity] = data;
     // drawNextFrame(); // (but should we?)
     sendJSONXMLHTTPRequest('POST', `entity/${entity}`, data, rsp_data => {
-        console.log(`Sending new entity ${entity}`);
+        // console.log(`Sending new entity ${entity}`);
     });
     // drawFrame();
 }
@@ -341,7 +341,6 @@ mouse = (function() {
 })();
 
 // Add the application specific mouse listeners!
-//XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
     addEntityWithoutName({'x':x,'y':y,'colour':brushColor,'radius':brushRadius});
 });
@@ -357,8 +356,12 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 
 function update() {
     sendJSONXMLHTTPRequest('GET', 'world', null, data => {
-        new_world = { ...world, ...data};
-        world = new_world;
+        if (Object.keys(data).length === 0) {
+            world = data;
+        } else {
+            new_world = { ...world, ...data};
+            world = new_world;
+        }
         drawNextFrame();
         drawFrame();
     });
