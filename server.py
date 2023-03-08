@@ -71,6 +71,7 @@ class World:
 
     def clear(self):
         self.space = dict()
+        self.last_modified = datetime.datetime.utcnow()
 
     def get(self, entity):
         return self.space.get(entity,dict())
@@ -158,7 +159,6 @@ def get_entity(entity):
     entity_data = myWorld.get(entity)
     if entity_data == {}:
         app.logger.warning(f'Unknown entity [{entity}], returning empty JSON')
-    # TODO Should I set Headers?
     return entity_data
 
 @app.route("/clear", methods=['POST','GET'])
