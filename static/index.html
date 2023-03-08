@@ -40,6 +40,11 @@
             margin-bottom: 5pt
         }
         
+        .canvasCustomization {
+            display: flex;
+            align-items: center;
+        }
+
         .brushOptions {
             display: flex;
         }
@@ -57,8 +62,8 @@
   <body> 
     <div class="drawer">
         <h3 id="drawerId">Hello!</h3>
-        <div class="brushCustomization">
-            <h4>Customize your brush!</h4>
+        <h4>Customize your brush!</h4>
+        <div class="canvasCustomization">
             <div class="brushOptions">
                 <div class="brushOption">
                     <label for="brushColor">COLOR: </label>
@@ -68,6 +73,9 @@
                     <label for="brushRadius">SIZE: </label>
                     <input type="range" min="2" max="10" value="5" id="brushRadius">
                 </div>
+            </div>
+            <div class="worldOptions">
+                <button onclick="clearWorld()">Clear the canvas</button>
             </div>
         </div>
     </div>
@@ -82,7 +90,7 @@ var H = canvas.height = window.innerHeight-200;
 var uuid = self.crypto.randomUUID();
 document.querySelector('#drawerId').textContent = `Drawer ID: ${uuid}`;
 var appUrl = 'http://localhost:5000';
-var fps = 30; //fps = 0.25;
+var fps = 30; // fps = 0.25;
 
 var brushColor = 'red';
 var brushRadius = 2;
@@ -148,7 +156,6 @@ function sendJSONXMLHTTPRequest(method, path, objects, callback) {
 
 world = {};
 
-//XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
         beginPath();              
@@ -353,6 +360,10 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
     addEntityWithoutName({'x':x,'y':y,'colour':brushColor,'radius':brushRadius});
 });
 
+function clearWorld() {
+    sendJSONXMLHTTPRequest('GET', 'clear', null, data => {
+    });
+}
 
 function update() {
     sendJSONXMLHTTPRequest('GET', 'world', null, data => {
