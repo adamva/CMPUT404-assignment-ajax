@@ -24,15 +24,12 @@
     <script src="json2.js"></script>
   </head> 
   <body bgcolor="black" height="100%" width="100%"> 
-    <div style="border: 1pt solid white; color: white">
+    <div style="border-bottom: 2pt solid white; color: white">
         <h3 id="drawerId">Hello!</h3>
+        <h4>Customize your brush</h2>
         <label for="brushColor">Brush Color: </label>
-        <select id="brushColor">
-            <option value="red">Red</option>
-            <option value="green">Green</option>
-            <option value="blue">Blue</option>
-        </select>
-        <label for="brushRadius">Brush Radius: </label>
+        <input type="color" id="brushColor" value="red"> </input>
+        <label for="brushRadius">Brush Size: </label>
         <input type="range" min="2" max="10" value="5" id="brushRadius">
     </div>
     <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas> 
@@ -44,7 +41,7 @@ var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 
 var uuid = self.crypto.randomUUID();
-document.querySelector('#drawerId').textContent = `ID: ${uuid}`;
+document.querySelector('#drawerId').textContent = `Drawer ID: ${uuid}`;
 var appUrl = 'http://localhost:5000';
 var fps = 30; // fps = 0.25;
 
