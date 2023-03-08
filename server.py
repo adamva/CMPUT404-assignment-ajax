@@ -148,7 +148,6 @@ def update(entity):
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''Return the current world'''
-    # TODO Should I set Headers?
     rsp = Response(response=json.dumps(myWorld.world()), status=200, mimetype='application/json')
     rsp.headers['Last-Modified'] = myWorld.get_last_modified()
     return rsp
@@ -165,8 +164,9 @@ def get_entity(entity):
 def clear():
     '''Clear the world'''
     myWorld.clear()
-    # # TODO Should I set Headers?
-    return myWorld.world()
+    rsp = Response(response=json.dumps(myWorld.world()), status=200, mimetype='application/json')
+    rsp.headers['Last-Modified'] = myWorld.get_last_modified()
+    return rsp
 
 if __name__ == "__main__":
     app.run()
